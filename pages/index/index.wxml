@@ -1,2 +1,9 @@
 <!-- map -->
-<map id="map" bindcontroltap="bindControlTap" bindregionchange="bindReginChange" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" controls="{{controls}}" show-location style="width: {{mapw}}; height: {{maph}};" scale="{{scale}}"></map>
+<map id="map" bindcontroltap="bindControlTap" bindregionchange="bindReginChange" longitude="{{longitude}}" 
+latitude="{{latitude}}" markers="{{markers}}" controls="{{controls}}" show-location 
+style="width: {{mapw}}; height: {{maph}};" scale="{{scale}}">
+</map>
+
+<cover-view class='position' bindtap="bindControlTap">
+	<cover-image src="/images/focus-3-line.png" />
+</cover-view>
