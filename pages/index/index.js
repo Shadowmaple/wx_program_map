@@ -6,28 +6,104 @@
 // 引入SDK核心类
 var QQMapWX = require('../../libs/qqmap-wx-jssdk.js');
 var qqmapsdk;
+// QQMap key
+var key = ''
+
+var centerMarker = {
+  iconPath: '../../images/map.png',
+  id: 0,
+  latitude: 23.096994,
+  longitude: 113.324520,
+  width: 30,
+  height: 50,
+}
+
+var foodMarker = {
+  iconPath: '../../images/restaurant.png',
+  id: 0,
+  latitude: 23.096994,
+  longitude: 113.324520,
+}
+
 Page({
+  data: {
+    latitude: 23.096994,
+    longitude: 113.324520,
+    mapw: '100%',
+    maph: '0',
+    scale: '16',
+    markers: [centerMarker],
+    // markers: [{
+    //   iconPath: '../../images/map.png',
+    //   id: 0,
+    //   latitude: 23.096994,
+    //   longitude: 113.324520,   
+    // }]
+  },
   onLoad: function () {
     // 实例化API核心类
     qqmapsdk = new QQMapWX({
-      key: '' // QQMap key
-    });
+      key: key
+    })
+    wx.getSystemInfo({
+      success: res => {
+        console.log(res.windowWidth)
+        console.log(res.windowHeight)
+        var mapw = res.windowWidth
+        var maph = res.windowHeight
+        this.setData({
+          maph: maph + 'px'
+        })
+      }
+    })
   },
-  onShow: function () {
-    // 调用接口
+  onReady: function () {
+    wx.getLocation({
+      type: 'gcj02',
+      success: res => {
+        this.setData({
+          longitude: res.longitude,
+          latitude: res.latitude,
+        })
+        this.getFood(res.longitude, res.latitude)
+      }
+    })
+  },
+  getFood: function (longitude, latitude) {
     qqmapsdk.search({
       keyword: '餐厅',
-      // ocation: '39.980014,116.313972',  //设置周边搜索中心点
-      success: function (res) {
+      location: {
+        longitude: longitude,
+        latitude: latitude,
+      },    
+      success: res => {
         console.log('search from map successfully', res);
+        var marks = []
+        for (let i in res.data) {
+          foodMarker.id = i + 1
+          foodMarker.longitude = res.data[i].location.lng,
+            foodMarker.latitude = res.data[i].location.lat,
+            marks.push(foodMarker)
+        }
+        centerMarker.longitude = longitude
+        centerMarker.latitude = latitude
+        marks.push(centerMarker)
+
+        this.setData({
+          markers: marks,
+        })
       },
       fail: function (res) {
         console.log(res);
       },
-      complete: function (res) {
-        console.log('complete', res);
-      }
+      // complete: function (res) {
+      //   console.log('complete', res);
+      // }
     })
+  },
+  onShow: function () {
+    // 调用接口
+    // qqmapsdk.search({})
   },
 })
 
